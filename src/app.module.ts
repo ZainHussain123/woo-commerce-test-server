@@ -17,19 +17,15 @@ import { Product } from './products/entities/product.entity';
 
     ScheduleModule.forRoot(),
 
-    // ✅ Use forRootAsync to access ConfigService
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST') || 'localhost',
-        port: configService.get<number>('POSTGRES_PORT') || 5000,
-        username: configService.get<string>('POSTGRES_USER') || 'postgress',
-        password: String(
-          configService.get<string>('POSTGRES_PASSWORD') || '1234566',
-        ),
-        database: configService.get<string>('POSTGRES_DB') || 'woocommerce',
+        url: configService.get<string>('DATABASE_URL'),
+        ssl: process.env.DATABASE_URL?.includes('neon.tech')
+          ? { rejectUnauthorized: false }
+          : false,
         entities: [Product],
         synchronize: configService.get<boolean>('TYPEORM_SYNCHRONIZE', true),
       }),
