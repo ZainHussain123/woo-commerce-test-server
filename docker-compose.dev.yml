@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # Development override for the app service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      TYPEORM_LOGGING: true
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./nest-cli.json:/app/nest-cli.json
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Debug port
